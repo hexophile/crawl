@@ -95,7 +95,21 @@ include = advanced_optioneering.txt
 
 --##################### Automatic tile change function
 	function AutoChangeTile()
-		if you.god():find("Jiyva") then
+		if you.race() == "hill orc" then
+			if you.xl() < 5 then
+				ChangeTile("orc")
+			elseif you.xl() < 10 then
+				ChangeTile("orc priest")
+			elseif you.xl() < 15 then
+				ChangeTile("orc warrior")
+			elseif you.xl() < 20 then
+				ChangeTile("orc knight")
+			elseif you.xl() < 25 then
+				ChangeTile("orc warlord")
+			else
+				ChangeTile("saint roka")
+			end
+		elseif you.god():find("Jiyva") then
 			if you.xl() < 6 then
 				ChangeTile("ooze")
 			elseif you.xl() < 12 then
