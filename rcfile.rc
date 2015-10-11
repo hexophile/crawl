@@ -38,7 +38,7 @@ include = advanced_optioneering.txt
 # will show up in crawl message log, but there can be 'errors' that won't be
 # error for interpreter at all, like calling function BEFORE declaration.
 #
-# Note that in you.god():find("regex") size of letters matters.
+# Please note in function("regex") size of letters matters.
 #
 
 {
@@ -95,7 +95,7 @@ include = advanced_optioneering.txt
 
 --##################### Automatic tile change function
 	function AutoChangeTile()
-		if you.race() == "hill orc" then
+		if you.race() == "Hill Orc" then
 			if you.xl() < 5 then
 				ChangeTile("orc")
 			elseif you.xl() < 10 then
