@@ -10,5 +10,16 @@ Therefore I put here list of players from whom I copied something: bart, Pikaro,
 
 Thank you guys, and sorry I've stolen so much from you all :P
 
+# Useful stuff/links
+
+You can find there almost everything from my RC:
+ - https://github.com/crawl/crawl/blob/master/crawl-ref/docs/options_guide.txt
+
+Functions ready() and AnnounceDamage() can be found here:
+ - https://github.com/HilariousDeathArtist/DCSSConfigFile
+
+Especially function ready() which is absolutely awesome.
+
+
 # Other
 My nick in game is Alipheese and hexophile, I'm playing on xtahua server.
