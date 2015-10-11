@@ -1,13 +1,25 @@
-# crawl
-Things related to Dungeon Crawl Stone Soup game
+# Introduction
+This repository contains things related to Dungeon Crawl Stone Soup game, which you can find here: http://crawl.develz.org/
 
-RC file:
+You can use this RCfile freely, but if you don't mind, please include link to this or other reps mentioned in RC.
 
-TODO:
-1. Complete automatic change tile for all gods/races
-2. Autocasting common spells like regen or lichform
-3. Display mode switch in game(if possible)
-4. Complete XL based parts in: force_more, colouring, hp_warning,
-5. Put all rest things like ignore and autoinscribe to lua
-    \It can be done with vim, but... yeah, 2lazy4that, maybe later
-6. Someone could make gods force_more, each god has its own events.
+# RCfile
+RC is edited by me, lots of things in RCfile is copied from other players, such as autoinscription or OpenSkills().
+
+Therefore I put here list of players from whom I copied something: bart, Pikaro, Lasty, Vidiiot
+
+Thank you guys, and sorry I've stolen so much from you all :P
+
+# Useful stuff/links
+
+You can find there almost everything from my RC:
+ - https://github.com/crawl/crawl/blob/master/crawl-ref/docs/options_guide.txt
+
+Functions ready() and AnnounceDamage() can be found here:
+ - https://github.com/HilariousDeathArtist/DCSSConfigFile
+
+Especially function ready() which is absolutely awesome.
+
+
+# Other
+My nick in game is Alipheese and hexophile, I'm playing on xtahua server.
