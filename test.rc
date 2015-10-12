@@ -153,12 +153,17 @@ include = advanced_optioneering.txt
 	end
 --##################### End of AutoChangeTile function
 
+	local playerXL = 0
 --##################### Main funciton
 	function ready()
 		AnnounceDamage()
 		OpenSkills()
 		SpeedrunMode()
-		AutoChangeTile()
+		
+		if you.xl() ~= playerXL then
+			playerXL = you.xl()
+			AutoChangeTile()
+		end
 	end
 
 --##################### If for all untiled races except naga. They're ugly.
