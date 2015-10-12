@@ -1,21 +1,18 @@
+{
+if crawl.yesno("Tiles(Y) or hybrid(N)?") then
+	crawl.mpr("Tiles")
+	tile_display_mode = tiles
+else
+	crawl.mpr("Hybrid")
+	tile_display_mode = hybrid
+end
+}
 #####################
 ##################### Miscellaneous
 #####################
 
-# https://github.com/HilariousDeathArtist/DCSSConfigFile
 include += HDamage.rc
-
 include = advanced_optioneering.txt
-
-#
-# Please be aware where do you place functions calls - always after declaration.
-# Function ready() can stop working if you mess up one function, most of errors
-# will show up in crawl message log, but there can be 'errors' that won't be
-# error for interpreter at all, like calling function BEFORE declaration.
-#
-# Please note in function("regex") size of letters matters.
-#
-
 {
 --##################### Autopickup artefacts
 	local function pickup_artefacts(item, name)
@@ -778,4 +775,3 @@ dump_order = header, hiscore, stats, misc, mutations, inventory, spells, skills,
 #####################
 ##################### End of notes
 #####################
-# And those who use this RC should thank to emiel - my teacher in crawl - who taught me how to play and kept me in this!
