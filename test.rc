@@ -8,7 +8,7 @@ else
 end
 }
 #####################
-##################### Miscellaneous
+##################### clua main body section
 #####################
 
 include += HDamage.rc
@@ -180,7 +180,57 @@ default_manual_training = true
 
 # mechanics, travel, rest, chunk, lua, butcher, misc, damage, eating, tile,
 #####################
-##################### End of miscellaneous
+##################### End of clua main body section
+#####################
+
+
+#####################
+##################### Mechanics
+##################### 
+
+confirm_butcher = never
+easy_eat_chunks = true
+auto_eat_chunks = true
+auto_sacrifice = true
+rest_wait_both = true
+
+travel_delay = -1
+explore_delay = -1
+rest_delay = -1
+
+explore_stop = items,stairs,shops,altars,portals,branches,runed_doors
+travel_avoid_terrain = deep water
+
+easy_unequip = true
+equip_unequip = true
+
+fire_order += inscribed
+pickup_thrown = false
+enable_recast_spell = true
+
+show_gold_turns = true
+show_game_turns = true
+
+# In theory it should help in autoexploring
+# EDIT: And it does. A lot!
+explore_wall_bias = 0
+explore_improved = true
+
+
+: if you.god():find("Cheibriados") then
+	hp_warning = 65
+	mp_warning = 30
+	autofight_stop = 50
+: else
+	hp_warning = 40
+	mp_warning = 30
+	autofight_stop = 40
+:end
+
+
+# Tags: hp, tab, autofight, warning,
+#####################
+##################### End of mechanics
 #####################
 
 
@@ -362,56 +412,6 @@ mp_colour = 100:lightcyan, 85:cyan, 60:lightblue, 30:blue, 15:red
 # Tags: stats, colours, colouring, menu, glyphs, hp, mp, health, mana,
 #####################
 ##################### End of colouring
-#####################
-
-
-#####################
-##################### Mechanics
-##################### 
-
-confirm_butcher = never
-easy_eat_chunks = true
-auto_eat_chunks = true
-auto_sacrifice = true
-rest_wait_both = true
-
-travel_delay = -1
-explore_delay = -1
-rest_delay = -1
-
-explore_stop = items,stairs,shops,altars,portals,branches,runed_doors
-travel_avoid_terrain = deep water
-
-easy_unequip = true
-equip_unequip = true
-
-fire_order += inscribed
-pickup_thrown = false
-enable_recast_spell = true
-
-show_gold_turns = true
-show_game_turns = true
-
-# In theory it should help in autoexploring
-# EDIT: And it does. A lot!
-explore_wall_bias = 0
-explore_improved = true
-
-
-: if you.god():find("Cheibriados") then
-	hp_warning = 65
-	mp_warning = 30
-	autofight_stop = 50
-: else
-	hp_warning = 40
-	mp_warning = 30
-	autofight_stop = 40
-:end
-
-
-# Tags: hp, tab, autofight, warning,
-#####################
-##################### End of mechanics
 #####################
 
 
