@@ -11,6 +11,8 @@ end
 ##################### clua main body section
 #####################
 
+bindkey = [s] CMD_LUA_CONSOLE
+
 include += HDamage.rc
 include = advanced_optioneering.txt
 {
@@ -171,9 +173,6 @@ include = advanced_optioneering.txt
 		tile_show_player_species = true
 	end
 
---##################### All rest
-
--- There's problem with main loop and tile changing - need fix
 }
 
 default_manual_training = true
@@ -211,8 +210,6 @@ enable_recast_spell = true
 show_gold_turns = true
 show_game_turns = true
 
-# In theory it should help in autoexploring
-# EDIT: And it does. A lot!
 explore_wall_bias = 0
 explore_improved = true
 
