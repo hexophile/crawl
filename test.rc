@@ -1,20 +1,14 @@
-{
-if crawl.yesno("Tiles(Y) or hybrid(N)?") then
-	crawl.mpr("Tiles")
-	tile_display_mode = tiles
-else
-	crawl.mpr("Hybrid")
-	tile_display_mode = hybrid
-end
-}
 #####################
 ##################### clua main body section
 #####################
 
+# https://github.com/HilariousDeathArtist/DCSSConfigFile
+include += HDamage.rc
+
+include = advanced_optioneering.txt
+
 bindkey = [s] CMD_LUA_CONSOLE
 
-include += HDamage.rc
-include = advanced_optioneering.txt
 {
 --##################### Autopickup artefacts
 	local function pickup_artefacts(item, name)
@@ -155,7 +149,7 @@ include = advanced_optioneering.txt
 	end
 --##################### End of AutoChangeTile function
 
---##################### Main funciton
+--##################### Main function
 	local playerXL = 0
 	function ready()
 		AnnounceDamage()
@@ -173,6 +167,9 @@ include = advanced_optioneering.txt
 		tile_show_player_species = true
 	end
 
+--##################### All rest
+
+-- There's problem with main loop and tile changing - need fix
 }
 
 default_manual_training = true
@@ -210,6 +207,8 @@ enable_recast_spell = true
 show_gold_turns = true
 show_game_turns = true
 
+# In theory it should help in autoexploring
+# EDIT: And it does. A lot!
 explore_wall_bias = 0
 explore_improved = true
 
@@ -400,7 +399,6 @@ glyph += $important:ring of (teleport|.*slaying|sustain abilities)
 
 
 ##################### Stats colouring (numbers)
-
 status_caption_colour = green
 hp_colour = 100:lightgreen, 90:green, 60:yellow, 30:lightred, 15:red
 stat_colour = 125:white, 50:lightgreen, 14:green, 9:yellow, 6:lightred, 3:red
@@ -582,7 +580,6 @@ ap += $?!"/%}
 
 
 ##################### Auto-not-grab - exceptions of your kleptomania
-
 ae := autopickup_exceptions
 ae =
 
@@ -598,7 +595,6 @@ ae ^= <(phial|lamp|disc|fan) of.*
 ae ^= <scrolls? of.*(immolation)
 
 ##################### XL depend autopickup exceptions
-
 : if you.xl() >= 24 then
 	ae ^= >potions? of.*(lignification)
 : else
@@ -777,7 +773,6 @@ force("Xtahua.*into view", true)
 force(".*ghost of.*into view", true)
 
 --##################### XL depend force_more_message
-
 if you.xl() < 25 then
 	force("juggernaut.*into view", true)
 else
