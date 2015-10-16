@@ -10,14 +10,14 @@ include = advanced_optioneering.txt
 bindkey = [s] CMD_LUA_CONSOLE
 
 {
---##################### Autopickup artefacts
-	local function pickup_artefacts(item, name)
+--##################### Autopickup
+	local function AutoPickup(item, name)
 		if not item.is_useless and item.artefact then
 			return true
 		end
 	end
 
-	add_autopickup_func(pickup_artefacts)
+	add_autopickup_func(AutoPickup)
 
 --##################### Send command to crawl
 	function SendCmd(cmd)
