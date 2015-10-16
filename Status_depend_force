@@ -1,0 +1,45 @@
+
+--##################### Status depend force_more_message
+if you.res_fire() <= 0 then
+	force(".*flaming.*into view", true)
+	force(".*fire.*into view", true)
+else
+	force(".*flaming.*into view", false)
+	force(".*fire.*into view", false)
+end
+
+if you.res_cold() <= 0 then
+	force(".*freezing.*into view", true)
+	force(".*ice.*into view", true)
+else
+	force(".*freezing.*into view", false)
+	force(".*ice.*into view", false)
+end
+
+if you.res_draining() <= 0 then
+	force(".*draining.*into view", true)
+	force(".*shadow.*into view", true)
+else
+	force(".*draining.*into view", false)
+	force(".*shadow.*into view", false)
+end
+
+if you.res_shock() <= 0 then
+	force(".*electrocution.*into view", true)
+	force(".*storm.*into view", true)
+else
+	force(".*electrocution.*into view", false)
+	force(".*storm.*into view", false)
+end
+
+if you.res_mutation() <= 0 and you.god():find("Zin") ~= true then
+	force("neqoxec.*into view", true)
+	force("cacodemon.*into view", true)
+	force("shining eye.*into view", true)
+	force("orb of fire.*into view", true)
+else
+	force("neqoxec.*into view", false)
+	force("cacodemon.*into view", false)
+	force("shining eye.*into view", false)
+	force("orb of fire.*into view", false)
+end
