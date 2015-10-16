@@ -20,6 +20,8 @@ include += HDamage.rc
 
 include = advanced_optioneering.txt
 
+bindkey = [s] CMD_LUA_CONSOLE
+
 #
 # Please be aware where do you place functions calls - always after declaration.
 # Function ready() can stop working if you mess up one function, most of errors
@@ -419,7 +421,6 @@ glyph += $important:ring of (teleport|.*slaying|sustain abilities)
 
 
 ##################### Stats colouring (numbers)
-
 status_caption_colour = green
 hp_colour = 100:lightgreen, 90:green, 60:yellow, 30:lightred, 15:red
 stat_colour = 125:white, 50:lightgreen, 14:green, 9:yellow, 6:lightred, 3:red
@@ -601,7 +602,6 @@ ap += $?!"/%}
 
 
 ##################### Auto-not-grab - exceptions of your kleptomania
-
 ae := autopickup_exceptions
 ae =
 
@@ -617,7 +617,6 @@ ae ^= <(phial|lamp|disc|fan) of.*
 ae ^= <scrolls? of.*(immolation)
 
 ##################### XL depend autopickup exceptions
-
 : if you.xl() >= 24 then
 	ae ^= >potions? of.*(lignification)
 : else
@@ -714,10 +713,88 @@ force("is wielding.*distortion", true)
 force("sense of stasis", true)
 force("You have reached level", true)
 force("You have finished your manual of", true)
-force("(Agnes|Aizul|Antaeus|Asmodeus|Asterion|Azrael|Blork the orc|Boris|Cerebov|Crazy Yiuf|Dispater|Dissolution|Donald|Dowan|Duvessa|Edmund|the Enchantress|Ereshkigal|Erica|Erolcha|Eustachio|Fannar|Frances|Frederick|Gastronok|Geryon|Gloorx Vloq|Grinder|Grum|Harold|Ignacio|Ijyb|Ilsuiw|Jessica|Jorgrun|Jory|Joseph|Josephine|Khufu|Kirke|Lamia|the Lernaean hydra|Lom Lobon|Louise|Mara|Margery|Maud|Maurice|Menkaure|Mennas|Mnoleg|Murray|Natasha|Nergalle|Nessos|Nikola|Norris|Pikel|Plog|Polyphemus|Prince Ribbit|Psyche|Purgy|Robin|Roxanne|the royal jelly|Rupert|Saint Roka|the Serpent of Hell|Sigmund|Snorg|Sonja|Terence|Tiamat|Urug|Vashnia|Wiglaf|Xtahua|*ghost of).*into view", true)
+
+force("Agnes.*into view", true)
+force("Aizul.*into view", true)
+force("Antaeus.*into view", true)
+force("Asmodeus.*into view", true)
+force("Asterion.*into view", true)
+force("Azrael.*into view", true)
+force("Blork the orc.*into view", true)
+force("Boris.*into view", true)
+force("Cerebov.*into view", true)
+force("Crazy Yiuf.*into view", true)
+force("Dispater.*into view", true)
+force("Dissolution.*into view", true)
+force("Donald.*into view", true)
+force("Dowan.*into view", true)
+force("Duvessa.*into view", true)
+force("Edmund.*into view", true)
+force("the Enchantress.*into view", true)
+force("Ereshkigal.*into view", true)
+force("Erica.*into view", true)
+force("Erolcha.*into view", true)
+force("Eustachio.*into view", true)
+force("Fannar.*into view", true)
+force("Frances.*into view", true)
+force("Frederick.*into view", true)
+force("Gastronok.*into view", true)
+force("Geryon.*into view", true)
+force("Gloorx Vloq.*into view", true)
+force("Grinder.*into view", true)
+force("Grum.*into view", true)
+force("Harold.*into view", true)
+force("Ignacio.*into view", true)
+force("Ijyb.*into view", true)
+force("Ilsuiw.*into view", true)
+force("Jessica.*into view", true)
+force("Jorgrun.*into view", true)
+force("Jory.*into view", true)
+force("Joseph.*into view", true)
+force("Josephine.*into view", true)
+force("Khufu.*into view", true)
+force("Kirke.*into view", true)
+force("Lamia.*into view", true)
+force("the Lernaean hydra.*into view", true)
+force("Lom Lobon.*into view", true)
+force("Louise.*into view", true)
+force("Mara.*into view", true)
+force("Margery.*into view", true)
+force("Maud.*into view", true)
+force("Maurice.*into view", true)
+force("Menkaure.*into view", true)
+force("Mennas.*into view", true)
+force("Mnoleg.*into view", true)
+force("Murray.*into view", true)
+force("Natasha.*into view", true)
+force("Nergalle.*into view", true)
+force("Nessos.*into view", true)
+force("Nikola.*into view", true)
+force("Norris.*into view", true)
+force("Pikel.*into view", true)
+force("Plog.*into view", true)
+force("Polyphemus.*into view", true)
+force("Prince Ribbit.*into view", true)
+force("Psyche.*into view", true)
+force("Purgy.*into view", true)
+force("Robin.*into view", true)
+force("Roxanne.*into view", true)
+force("the royal jelly.*into view", true)
+force("Rupert.*into view", true)
+force("Saint Roka.*into view", true)
+force("the Serpent of Hell.*into view", true)
+force("Sigmund.*into view", true)
+force("Snorg.*into view", true)
+force("Sonja.*into view", true)
+force("Terence.*into view", true)
+force("Tiamat.*into view", true)
+force("Urug.*into view", true)
+force("Vashnia.*into view", true)
+force("Wiglaf.*into view", true)
+force("Xtahua.*into view", true)
+force(".*ghost of.*into view", true)
 
 --##################### XL depend force_more_message
-
 if you.xl() < 25 then
 	force("juggernaut.*into view", true)
 else
