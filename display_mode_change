@@ -1,0 +1,9 @@
+{
+if crawl.yesno("Tiles(Y) or hybrid(N)?") then
+	crawl.mpr("Tiles")
+	tile_display_mode = tiles
+else
+	crawl.mpr("Hybrid")
+	tile_display_mode = hybrid
+end
+}
