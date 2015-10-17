@@ -1,8 +1,3 @@
-#####################
-##################### clua main body section
-#####################
-
-# https://github.com/HilariousDeathArtist/DCSSConfigFile
 include += HDamage.rc
 
 include = advanced_optioneering.txt
@@ -10,17 +5,8 @@ include = advanced_optioneering.txt
 bindkey = [s] CMD_LUA_CONSOLE
 
 {
---##################### Autopickup
-	local function AutoPickup(item, name)
-		if not item.is_useless and item.artefact then
-			return true
-		end
-	end
-
-	add_autopickup_func(AutoPickup)
-
 --##################### Send command to crawl
-	function SendCmd(cmd)
+	function Cmd(cmd)
 		crawl.setopt(cmd)
 	end
 
@@ -41,124 +27,9 @@ bindkey = [s] CMD_LUA_CONSOLE
 --##################### Speedrunning mode
 	function SpeedrunMode()
 		if items.equipped_at("Weapon") and (string.find(items.equipped_at("Weapon").name(), "meat ration") or string.find(items.equipped_at("Weapon").name(), "bread ration")) then
-			SendCmd("force_more_message += .*into view")
+			Cmd("force_more_message += .*into view")
 		else
-			SendCmd("force_more_message -= .*into view")
-		end
-	end
-
---##################### Force more function
-	function force(rng, t)
-		if t then
-			SendCmd("force_more_message += "..rng)
-		else
-			SendCmd("force_more_message -= "..rng)
-		end
-	end
-
---##################### Tile change function
-	function ChangeTile(tile)
-		SendCmd("tile_player_tile = mons:"..tile)
-	end
-
---##################### Automatic tile change function
-	function AutoChangeTile()
-		if you.race() == "Hill Orc" then
-			if you.xl() < 5 then
-				ChangeTile("orc")
-			elseif you.xl() < 10 then
-				ChangeTile("orc priest")
-			elseif you.xl() < 15 then
-				ChangeTile("orc warrior")
-			elseif you.xl() < 20 then
-				ChangeTile("orc knight")
-			elseif you.xl() < 25 then
-				ChangeTile("orc warlord")
-			else
-				ChangeTile("saint roka")
-			end
-		elseif you.god():find("Jiyva") then
-			if you.xl() < 6 then
-				ChangeTile("ooze")
-			elseif you.xl() < 12 then
-				ChangeTile("acid blob")
-			elseif you.xl() < 18 then
-				ChangeTile("dissolution")
-			else
-				ChangeTile("the royal jelly")
-			end
-		elseif you.god():find("the Shining One") then
-			if you.xl() < 15 then
-				ChangeTile("cherub")
-			elseif you.xl() < 20 then
-				ChangeTile("angel")
-			elseif you.xl() < 24 then
-				ChangeTile("daeva")
-			else
-				ChangeTile("seraph")
-			end
-		elseif you.god():find("Zin") then
-			if you.xl() < 15 then
-				ChangeTile("cherub")
-			elseif you.xl() < 20 then
-				ChangeTile("angel")
-			elseif you.xl() < 24 then
-				ChangeTile("daeva")
-			else
-				ChangeTile("mennas")
-			end
-		elseif you.god():find("Trog") and you.race() == "Troll" then
-			if you.xl() < 10 then
-				ChangeTile("purgy")
-			elseif you.xl() < 15 then
-				ChangeTile("snorg")
-			elseif you.xl() < 20 then
-				ChangeTile("deep troll")
-			else
-				ChangeTile("iron troll")
-			end
-		elseif you.god():find("Makhleb") then
-			if you.xl() < 5 then
-				ChangeTile("crimson imp")
-			elseif you.xl() < 13 then
-				ChangeTile("red devil")
-			elseif you.xl() < 18 then
-				ChangeTile("balrug")
-			elseif you.xl() < 24 then
-				ChangeTile("hell sentinel")
-			elseif you.race() == "high elf" or you.race() == "deep elf" or you.race() == "human" then
-				ChangeTile("asmodeus")
-			elseif you.race() == "ogre" or you.race() == "troll" or you.race() == "naga" or you.race() == "hill orc" then
-				ChangeTile("cerebov")
-			else
-				ChangeTile("pandemonium lord")
-			end
-		elseif you.god():find("Vehumet") or you.god():find("Sif muna") then
-			if you.xl() < 10 then
-				ChangeTile("wizard")
-			elseif you.xl() < 15 then
-				ChangeTile("dowan")
-			elseif you.xl() < 20 then
-				ChangeTile("hellbinder")
-			elseif you.xl() < 26 then
-				ChangeTile("wretched star")
-			else
-				ChangeTile("lom lobon")
-			end
-		end
-	end
---##################### End of AutoChangeTile function
-
---##################### Main function
-	local playerXL = 0
-	function ready()
-		AnnounceDamage()
-		OpenSkills()
-		SpeedrunMode()
-		
-		if you.xl() ~= playerXL then
-			playerXL = you.xl()
-			AutoChangeTile()
+			Cmd("force_more_message -= .*into view")
 		end
 	end
 
@@ -212,17 +83,9 @@ show_game_turns = true
 explore_wall_bias = 0
 explore_improved = true
 
-
-: if you.god():find("Cheibriados") then
-	hp_warning = 65
-	mp_warning = 30
-	autofight_stop = 50
-: else
-	hp_warning = 40
-	mp_warning = 30
-	autofight_stop = 40
-:end
-
+hp_warning = 40
+mp_warning = 30
+autofight_stop = 35
 
 # Tags: hp, tab, autofight, warning,
 #####################
@@ -574,9 +437,10 @@ it += fan of gales:f
 # [ = armour
 
 ap := autopickup
-ap =
+#ap =
 
-ap += $?!"/%}
+ap -= \|
+#ap = $?!"/%}
 
 
 ##################### Auto-not-grab - exceptions of your kleptomania
@@ -612,6 +476,26 @@ ae ^= <scrolls? of.*(immolation)
 : else
 	ae ^= <wand of.*(fire|cold|draining|lighting|fireball)
 : end
+
+{
+--##################### Autopickup management function
+	function exception(item, t)
+		if t then
+			Cmd("autopickup_exceptions ^= <"..item)
+		else
+			Cmd("autopickup_exceptions ^= >"..item)
+		end
+	end
+
+--##################### Autopickup for certain items
+	local function pickup_artefacts(item, name)
+		if not item.is_useless and item.artefact then
+			return true
+		end
+	end
+
+	add_autopickup_func(pickup_artefacts)
+}
 
 # Tags: autopickup, expceptions, items, grab, unidentified
 #####################
@@ -677,162 +561,350 @@ stop += Your transformation is almost over
 # force("regex", true|false)
 # Where true means "add" and false "remove"
 
-{
-force("Trog sends monsters to punish you", true)
-force(".*skill increases.*", true)
-force(".*LOW HITPOINT.*", true)
-force("Your transformation is almost over.", true)
-force("seraph.*into view", true)
-force("You fail to use your ability", true)
-force("You miscast", true)
-force("You feel your control is inadequate", true)
-force("Your surroundings flicker", true)
-force("is wielding.*distortion", true)
-force("sense of stasis", true)
-force("You have reached level", true)
-force("You have finished your manual of", true)
+{	
+--##################### Force more function
+	function force(rng, t)
+		if t then
+			Cmd("force_more_message += "..rng)
+		else
+			Cmd("force_more_message -= "..rng)
+		end
+	end
 
-force("Agnes.*into view", true)
-force("Aizul.*into view", true)
-force("Antaeus.*into view", true)
-force("Asmodeus.*into view", true)
-force("Asterion.*into view", true)
-force("Azrael.*into view", true)
-force("Blork the orc.*into view", true)
-force("Boris.*into view", true)
-force("Cerebov.*into view", true)
-force("Crazy Yiuf.*into view", true)
-force("Dispater.*into view", true)
-force("Dissolution.*into view", true)
-force("Donald.*into view", true)
-force("Dowan.*into view", true)
-force("Duvessa.*into view", true)
-force("Edmund.*into view", true)
-force("the Enchantress.*into view", true)
-force("Ereshkigal.*into view", true)
-force("Erica.*into view", true)
-force("Erolcha.*into view", true)
-force("Eustachio.*into view", true)
-force("Fannar.*into view", true)
-force("Frances.*into view", true)
-force("Frederick.*into view", true)
-force("Gastronok.*into view", true)
-force("Geryon.*into view", true)
-force("Gloorx Vloq.*into view", true)
-force("Grinder.*into view", true)
-force("Grum.*into view", true)
-force("Harold.*into view", true)
-force("Ignacio.*into view", true)
-force("Ijyb.*into view", true)
-force("Ilsuiw.*into view", true)
-force("Jessica.*into view", true)
-force("Jorgrun.*into view", true)
-force("Jory.*into view", true)
-force("Joseph.*into view", true)
-force("Josephine.*into view", true)
-force("Khufu.*into view", true)
-force("Kirke.*into view", true)
-force("Lamia.*into view", true)
-force("the Lernaean hydra.*into view", true)
-force("Lom Lobon.*into view", true)
-force("Louise.*into view", true)
-force("Mara.*into view", true)
-force("Margery.*into view", true)
-force("Maud.*into view", true)
-force("Maurice.*into view", true)
-force("Menkaure.*into view", true)
-force("Mennas.*into view", true)
-force("Mnoleg.*into view", true)
-force("Murray.*into view", true)
-force("Natasha.*into view", true)
-force("Nergalle.*into view", true)
-force("Nessos.*into view", true)
-force("Nikola.*into view", true)
-force("Norris.*into view", true)
-force("Pikel.*into view", true)
-force("Plog.*into view", true)
-force("Polyphemus.*into view", true)
-force("Prince Ribbit.*into view", true)
-force("Psyche.*into view", true)
-force("Purgy.*into view", true)
-force("Robin.*into view", true)
-force("Roxanne.*into view", true)
-force("the royal jelly.*into view", true)
-force("Rupert.*into view", true)
-force("Saint Roka.*into view", true)
-force("the Serpent of Hell.*into view", true)
-force("Sigmund.*into view", true)
-force("Snorg.*into view", true)
-force("Sonja.*into view", true)
-force("Terence.*into view", true)
-force("Tiamat.*into view", true)
-force("Urug.*into view", true)
-force("Vashnia.*into view", true)
-force("Wiglaf.*into view", true)
-force("Xtahua.*into view", true)
-force(".*ghost of.*into view", true)
+	force("Trog sends monsters to punish you", true)
+	force(".*skill increases.*", true)
+	force(".*LOW HITPOINT.*", true)
+	force("Your transformation is almost over.", true)
+	force("seraph.*into view", true)
+	force("You fail to use your ability", true)
+	force("You miscast", true)
+	force("You feel your control is inadequate", true)
+	force("Your surroundings flicker", true)
+	force("is wielding.*distortion", true)
+	force("sense of stasis", true)
+	force("You have reached level", true)
+	force("You have finished your manual of", true)
+	
+	force("Agnes.*into view", true)
+	force("Aizul.*into view", true)
+	force("Antaeus.*into view", true)
+	force("Asmodeus.*into view", true)
+	force("Asterion.*into view", true)
+	force("Azrael.*into view", true)
+	force("Blork the orc.*into view", true)
+	force("Boris.*into view", true)
+	force("Cerebov.*into view", true)
+	force("Crazy Yiuf.*into view", true)
+	force("Dispater.*into view", true)
+	force("Dissolution.*into view", true)
+	force("Donald.*into view", true)
+	force("Dowan.*into view", true)
+	force("Duvessa.*into view", true)
+	force("Edmund.*into view", true)
+	force("the Enchantress.*into view", true)
+	force("Ereshkigal.*into view", true)
+	force("Erica.*into view", true)
+	force("Erolcha.*into view", true)
+	force("Eustachio.*into view", true)
+	force("Fannar.*into view", true)
+	force("Frances.*into view", true)
+	force("Frederick.*into view", true)
+	force("Gastronok.*into view", true)
+	force("Geryon.*into view", true)
+	force("Gloorx Vloq.*into view", true)
+	force("Grinder.*into view", true)
+	force("Grum.*into view", true)
+	force("Harold.*into view", true)
+	force("Ignacio.*into view", true)
+	force("Ijyb.*into view", true)
+	force("Ilsuiw.*into view", true)
+	force("Jessica.*into view", true)
+	force("Jorgrun.*into view", true)
+	force("Jory.*into view", true)
+	force("Joseph.*into view", true)
+	force("Josephine.*into view", true)
+	force("Khufu.*into view", true)
+	force("Kirke.*into view", true)
+	force("Lamia.*into view", true)
+	force("the Lernaean hydra.*into view", true)
+	force("Lom Lobon.*into view", true)
+	force("Louise.*into view", true)
+	force("Mara.*into view", true)
+	force("Margery.*into view", true)
+	force("Maud.*into view", true)
+	force("Maurice.*into view", true)
+	force("Menkaure.*into view", true)
+	force("Mennas.*into view", true)
+	force("Mnoleg.*into view", true)
+	force("Murray.*into view", true)
+	force("Natasha.*into view", true)
+	force("Nergalle.*into view", true)
+	force("Nessos.*into view", true)
+	force("Nikola.*into view", true)
+	force("Norris.*into view", true)
+	force("Pikel.*into view", true)
+	force("Plog.*into view", true)
+	force("Polyphemus.*into view", true)
+	force("Prince Ribbit.*into view", true)
+	force("Psyche.*into view", true)
+	force("Purgy.*into view", true)
+	force("Robin.*into view", true)
+	force("Roxanne.*into view", true)
+	force("the royal jelly.*into view", true)
+	force("Rupert.*into view", true)
+	force("Saint Roka.*into view", true)
+	force("the Serpent of Hell.*into view", true)
+	force("Sigmund.*into view", true)
+	force("Snorg.*into view", true)
+	force("Sonja.*into view", true)
+	force("Terence.*into view", true)
+	force("Tiamat.*into view", true)
+	force("Urug.*into view", true)
+	force("Vashnia.*into view", true)
+	force("Wiglaf.*into view", true)
+	force("Xtahua.*into view", true)
+	force(".*ghost of.*into view", true)
 
---##################### XL depend force_more_message
-if you.xl() < 25 then
-	force("juggernaut.*into view", true)
-else
-	force("juggernaut.*into view", false)
-end
+--##################### force_more by XL
+	function forceByXL()
+		if you.xl() < 25 then
+			force("juggernaut.*into view", true)
+			force(".*distortion.*into view", true)
+		else
+			force("juggernaut.*into view", false)
+			force(".*distortion.*into view", false)
+		end
+		
+		if you.xl() < 20 then
+			force(".*dragon.*into view", true)
+			force(".*ugly.*into view", true)
+			force("catoblepas.*into view", true)
+		else
+			force(".*dragon.*into view", false)
+			force(".*ugly.*into view", false)
+			force("catoblepas.*into view", false)
+		end
+		
+		if you.xl() < 15 then
+			force(".*hydra.*into view", true)
+			force("dire elephant.*into view", true)
+			force("death yak.*into view", true)
+			force("ettin.*into view", true)
+			force(".*electrocution.*into view", true)
+		else
+			force(".*hydra.*into view", false)
+			force("dire elephant.*into view", false)
+			force("death yak.*into view", false)
+			force("ettin.*into view", false)
+			force(".*electrocution.*into view", false)
+		end
+		
+		if you.xl() < 13 then
+			force("spiny frog.*into view", true)
+			force("hill giant.*into view", true)
+		else
+			force("spiny frog.*into view", false)
+			force("hill giant.*into view", false)
+		end
+		
+		if you.xl() < 10 then
+			force("orc warrior.*into view", true)
+			force("orc priest.*into view", true)
+			force("ogre.*into view", true)
+		else
+			force("orc warrior.*into view", false)
+			force("orc priest.*into view", false)
+			force("ogre.*into view", false)
+		end
+		
+		if you.xl() < 5 then
+			force("gnoll.*halberd.*into view", true)
+		else
+			force("gnoll.*halberd.*into view", false)
+		end
+	end
+--##################### End of force_more by XL
 
-if you.xl() < 20 then
-	force(".*dragon.*into view", true)
-	force(".*ugly.*into view", true)
-	force("catoblepas.*into view", true)
-else
-	force(".*dragon.*into view", false)
-	force(".*ugly.*into view", false)
-	force("catoblepas.*into view", false)
-end
-
-if you.xl() < 15 then
-	force(".*hydra.*into view", true)
-	force("dire elephant.*into view", true)
-	force("death yak.*into view", true)
-	force("ettin.*into view", true)
-	force(".*electrocution.*into view", true)
-else
-	force(".*hydra.*into view", false)
-	force("dire elephant.*into view", false)
-	force("death yak.*into view", false)
-	force("ettin.*into view", false)
-	force(".*electrocution.*into view", false)
-end
-
-if you.xl() < 13 then
-	force("spiny frog.*into view", true)
-	force("hill giant.*into view", true)
-else
-	force("spiny frog.*into view", false)
-	force("hill giant.*into view", false)
-end
-
-if you.xl() < 10 then
-	force("orc warrior.*into view", true)
-	force("orc priest.*into view", true)
-	force("ogre.*into view", true)
-else
-	force("orc warrior.*into view", false)
-	force("orc priest.*into view", false)
-	force("ogre.*into view", false)
-end
-
-if you.xl() < 5 then
-	force("gnoll.*halberd.*into view", true)
-else
-	force("gnoll.*halberd.*into view", false)
-end
+--##################### force_more by resists
+	function forceByRes()
+		if you.res_fire() <= 0 then
+			force(".*flaming.*into view", true)
+			force(".*fire.*into view", true)
+		else
+			force(".*flaming.*into view", false)
+			force(".*fire.*into view", false)
+		end
+		
+		if you.res_cold() <= 0 then
+			force(".*freezing.*into view", true)
+			force(".*ice.*into view", true)
+		else
+			force(".*freezing.*into view", false)
+			force(".*ice.*into view", false)
+		end
+		
+		if you.res_draining() <= 0 then
+			force(".*draining.*into view", true)
+			force(".*shadow.*into view", true)
+		else
+			force(".*draining.*into view", false)
+			force(".*shadow.*into view", false)
+		end
+		
+		if you.res_shock() <= 0 then
+			force(".*electrocution.*into view", true)
+			force(".*storm.*into view", true)
+		else
+			force(".*electrocution.*into view", false)
+			force(".*storm.*into view", false)
+		end
+		
+		if you.res_mutation() <= 0 and not you.god():find("Zin") then
+			force("neqoxec.*into view", true)
+			force("cacodemon.*into view", true)
+			force("shining eye.*into view", true)
+			force("orb of fire.*into view", true)
+		else
+			force("neqoxec.*into view", false)
+			force("cacodemon.*into view", false)
+			force("shining eye.*into view", false)
+			force("orb of fire.*into view", false)
+		end
+	end
+--##################### End of force_more by resists
 }
-
 # Nested if statement doesn't seem to work here.
 
-# Tags: 
+# Tags: force, more, force_more_message, resists, stats, XL
 #####################
 ##################### End of force_more_message
+#####################
+
+
+#####################
+##################### Auto change tile
+#####################
+{
+--##################### Tile change function
+	function ChangeTile(tile)
+		Cmd("tile_player_tile = mons:"..tile)
+	end
+
+--##################### Automatic tile change function
+	function AutoChangeTile()
+		if you.race() == "Hill Orc" then
+			if you.xl() < 5 then
+				ChangeTile("orc")
+			elseif you.xl() < 10 then
+				ChangeTile("orc priest")
+			elseif you.xl() < 15 then
+				ChangeTile("orc warrior")
+			elseif you.xl() < 20 then
+				ChangeTile("orc knight")
+			elseif you.xl() < 25 then
+				ChangeTile("orc warlord")
+			else
+				ChangeTile("saint roka")
+			end
+		elseif you.god():find("Jiyva") then
+			if you.xl() < 6 then
+				ChangeTile("ooze")
+			elseif you.xl() < 12 then
+				ChangeTile("acid blob")
+			elseif you.xl() < 18 then
+				ChangeTile("dissolution")
+			else
+				ChangeTile("the royal jelly")
+			end
+		elseif you.god():find("the Shining One") then
+			if you.xl() < 15 then
+				ChangeTile("cherub")
+			elseif you.xl() < 20 then
+				ChangeTile("angel")
+			elseif you.xl() < 24 then
+				ChangeTile("daeva")
+			else
+				ChangeTile("seraph")
+			end
+		elseif you.god():find("Zin") then
+			if you.xl() < 15 then
+				ChangeTile("cherub")
+			elseif you.xl() < 20 then
+				ChangeTile("angel")
+			elseif you.xl() < 24 then
+				ChangeTile("daeva")
+			else
+				ChangeTile("mennas")
+			end
+		elseif you.god():find("Trog") and you.race() == "Troll" then
+			if you.xl() < 10 then
+				ChangeTile("purgy")
+			elseif you.xl() < 15 then
+				ChangeTile("snorg")
+			elseif you.xl() < 20 then
+				ChangeTile("deep troll")
+			else
+				ChangeTile("iron troll")
+			end
+		elseif you.god():find("Makhleb") then
+			if you.xl() < 5 then
+				ChangeTile("crimson imp")
+			elseif you.xl() < 13 then
+				ChangeTile("red devil")
+			elseif you.xl() < 18 then
+				ChangeTile("balrug")
+			elseif you.xl() < 24 then
+				ChangeTile("hell sentinel")
+			elseif you.race() == "high elf" or you.race() == "deep elf" or you.race() == "human" then
+				ChangeTile("asmodeus")
+			elseif you.race() == "ogre" or you.race() == "troll" or you.race() == "naga" or you.race() == "hill orc" then
+				ChangeTile("cerebov")
+			else
+				ChangeTile("pandemonium lord")
+			end
+		elseif you.god():find("Vehumet") or you.god():find("Sif muna") then
+			if you.xl() < 10 then
+				ChangeTile("wizard")
+			elseif you.xl() < 15 then
+				ChangeTile("dowan")
+			elseif you.xl() < 20 then
+				ChangeTile("hellbinder")
+			elseif you.xl() < 26 then
+				ChangeTile("wretched star")
+			else
+				ChangeTile("lom lobon")
+			end
+		end
+	end
+--##################### End of AutoChangeTile function
+}
+# Tags: tile, autochange, player
+#####################
+##################### End of auto change tile
+#####################
+
+
+#####################
+##################### Main loop
+#####################
+{
+	local playerXL = 0
+	function ready()
+		AnnounceDamage()
+		OpenSkills()
+		SpeedrunMode()
+
+		forceByRes()
+		
+		if you.xl() ~= playerXL then
+			playerXL = you.xl()
+			forceByXL()
+			AutoChangeTile()
+		end
+	end
+}
+#####################
+##################### End of main loop
 #####################
 
 
