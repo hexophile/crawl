@@ -130,7 +130,7 @@ menu += $good:amulet of (faith|rage|resist corrosion)
 menu += $verygood:amulet of (clarity|regeneration|resist mutation|the gourmand)
 
 menu += $good:\+.*(buckler|shield|mail|armour|robe|hat|helmet)
-menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|weapon).*
+menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|weapon|shield).*
 
 menu += $useless:inert
 menu += $survival:disc of storms
@@ -209,7 +209,7 @@ glyph += $good:amulet of (faith|rage|resist corrosion)
 glyph += $verygood:amulet of (clarity|regeneration|resist mutation|the gourmand)
 
 glyph += $good:\+.*(buckler|shield|mail|armour|robe|hat|helmet)
-glyph += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|weapon).*
+glyph += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|weapon|shield).*
 
 glyph += $survival:disc of storms
 glyph += $dangerous:tome of Destruction
@@ -440,7 +440,7 @@ ap := autopickup
 #ap =
 
 ap -= \|
-#ap = $?!"/%}
+#ap += $?!"/%}
 
 
 ##################### Auto-not-grab - exceptions of your kleptomania
@@ -450,7 +450,6 @@ ae =
 ae ^= >useless_item, >bad_item, >evil_item, >deck of.*
 ae ^= >wand of.*(frost|flame|magic darts|enslavement|paralyze|confusion|polymorph|random effects|slowing)
 ae ^= >wand of.*(digging|disintegration)
-ae ^= >potions? of.*(flight), >beef jerk.*, >.*pizza.*, >.*rod
 ae ^= >ring of (ice|fire|protection from .*|positive energy)
 ae ^= >ring of (wizardry|magicial power|stealth|flight|sustain abilities)
 ae ^= >ring of (strength|intelligence|dexterity|see invisible)
@@ -458,28 +457,9 @@ ae ^= >ring of (strength|intelligence|dexterity|see invisible)
 ae ^= <(phial|lamp|disc|fan) of.*
 ae ^= <scrolls? of.*(immolation)
 
-##################### XL depend autopickup exceptions
-: if you.xl() >= 24 then
-	ae ^= >potions? of.*(lignification)
-: else
-	ae ^= <potions? of.*(lignification)
-: end
-
-: if you.xl() >= 10 then
-	ae ^= >(throwing nets?|needles?).*
-: else
-	ae ^= <(throwing nets?|needles?).*
-: end
-
-: if you.xl() >=13 then
-	ae ^= >wand of.*(fire|cold|draining|lighting|fireball)
-: else
-	ae ^= <wand of.*(fire|cold|draining|lighting|fireball)
-: end
-
 {
 --##################### Autopickup management function
-	function exception(item, t)
+	function Autopickup(item, t)
 		if t then
 			Cmd("autopickup_exceptions ^= <"..item)
 		else
@@ -487,14 +467,49 @@ ae ^= <scrolls? of.*(immolation)
 		end
 	end
 
+--##################### XL depend autopickup
+	function AutopickupByXL()
+		if you.xl() < 24 then
+			Autopickup("potions? of.*lignification", true)
+		else
+			Autopickup("potions? of.*lignification", false)
+		end
+
+		if you.xl() < 13 then
+			Autopickup("(throwing nets?|needles?).*", true)
+		else
+			Autopickup("(throwing nets?|needles?).*", false)
+		end
+
+		if you.xl() < 16 then
+			Autopickup("wand of.*(fire|cold|draining|lighting|fireball)", true)
+		else
+			Autopickup("wand of.*(fire|cold|draining|lighting|fireball)", false)
+		end
+	end
+
+--##################### Race depend autopickup
+	if not you.race() == "Troll" then
+		Autopickup("beef jerk.*", false)
+		Autopickup(".*pizza.*", false)
+	end
+
+	if you.race() == "Troll" or you.race() == "Ogre" then
+		Autopickup("large rocks?", true)
+	end
+
 --##################### Autopickup for certain items
-	local function pickup_artefacts(item, name)
+	Autopickup("potions? of.*flight", false)
+	Autopickup(".*rod", false)
+
+--##################### Autopickup rules function
+	local function AutopickupSpecific(item, name)
 		if not item.is_useless and item.artefact then
 			return true
 		end
 	end
 
-	add_autopickup_func(pickup_artefacts)
+	add_autopickup_func(AutopickupSpecific)
 }
 
 # Tags: autopickup, expceptions, items, grab, unidentified
@@ -836,7 +851,7 @@ stop += Your transformation is almost over
 			else
 				ChangeTile("mennas")
 			end
-		elseif you.god():find("Trog") and you.race() == "Troll" then
+		elseif you.race() == "Troll" then
 			if you.xl() < 10 then
 				ChangeTile("purgy")
 			elseif you.xl() < 15 then
@@ -898,6 +913,7 @@ stop += Your transformation is almost over
 		
 		if you.xl() ~= playerXL then
 			playerXL = you.xl()
+			AutopickupByXL()
 			forceByXL()
 			AutoChangeTile()
 		end
