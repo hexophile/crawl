@@ -440,22 +440,43 @@ ap := autopickup
 #ap =
 
 ap -= \|
-#ap += $?!"/%}
+ap += $
 
 
 ##################### Auto-not-grab - exceptions of your kleptomania
 ae := autopickup_exceptions
 ae =
+ae ^= <(unidentified).*(scrolls?|wand|potions?|jewellery|book).*
+
+ae ^= <scrolls? of.*(immolation)
+ae ^= <scrolls? of.*(identify|silence|magic mapping|recharging)
+ae ^= <scrolls? of.*(acquirement|brand weapon|curse*|enchant.*)
+ae ^= <scrolls? of.*(blinking|teleport|fear|fog|summoning)
+: if you.race() == "Mummy" or you.race() == "Ghoul" or you.race() == "Vampire" then
+	ae ^= <scrolls? of torment
+	ae ^= >scrolls? of holy word
+: else
+	ae ^= >scrolls? of torment
+	ae ^= <scrolls? of holy word
+: end
+# Amnesia is doubtful
+
+ae ^= <potions? of.*(agility|brilliance|might|berserk rage)
+ae ^= <potions? of.*(ambrosia|curing|heal wounds|magic|resistance)
+ae ^= <potions? of.*(experience|invisibility|cancellation|beneficial mutation)
+: if you.race() == "Vampire" then
+	ae ^= <potions? of blood
+: end
 
 ae ^= >useless_item, >bad_item, >evil_item, >deck of.*
 ae ^= >wand of.*(frost|flame|magic darts|enslavement|paralyze|confusion|polymorph|random effects|slowing)
 ae ^= >wand of.*(digging|disintegration)
+
 ae ^= >ring of (ice|fire|protection from .*|positive energy)
 ae ^= >ring of (wizardry|magicial power|stealth|flight|sustain abilities)
 ae ^= >ring of (strength|intelligence|dexterity|see invisible)
 
 ae ^= <(phial|lamp|disc|fan) of.*
-ae ^= <scrolls? of.*(immolation)
 
 {
 --##################### Autopickup management function
