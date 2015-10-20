@@ -445,8 +445,14 @@ ap += $
 
 ##################### Auto-not-grab - exceptions of your kleptomania
 ae := autopickup_exceptions
-ae =
-ae ^= <(unidentified).*(scrolls?|wand|potions?|jewellery|book).*
+ae = 
+
+ae ^= <(unidentified).*(scrolls?|wand|jewellery|book).*
+: if you.race() == "Mummy" then
+	ae ^= >(unidentified).*potions?
+: else
+	ae ^= <(unidentified).*potions?
+: end
 
 ae ^= <scrolls? of.*(immolation)
 ae ^= <scrolls? of.*(identify|silence|magic mapping|recharging)
@@ -471,12 +477,17 @@ ae ^= <potions? of.*(experience|invisibility|cancellation|beneficial mutation)
 ae ^= >useless_item, >bad_item, >evil_item, >deck of.*
 ae ^= >wand of.*(frost|flame|magic darts|enslavement|paralyze|confusion|polymorph|random effects|slowing)
 ae ^= >wand of.*(digging|disintegration)
-
 ae ^= >ring of (ice|fire|protection from .*|positive energy)
 ae ^= >ring of (wizardry|magicial power|stealth|flight|sustain abilities)
 ae ^= >ring of (strength|intelligence|dexterity|see invisible)
 
 ae ^= <(phial|lamp|disc|fan) of.*
+
+: if you.race() ~= "Mummy" then
+	ae ^= <(meat rations?|bread rations?|chunks?.*|fruits?)
+: else
+	ae ^= >(meat rations?|bread rations?|chunks?.*|fruits?)
+: end
 
 {
 --##################### Autopickup management function
