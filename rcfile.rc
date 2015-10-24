@@ -31,7 +31,6 @@ bindkey = [s] CMD_LUA_CONSOLE
 # Please note in function("regex") size of letters matters.
 #
 
-
 {
 --##################### Send command to crawl
 	function Cmd(cmd)
@@ -52,12 +51,37 @@ bindkey = [s] CMD_LUA_CONSOLE
 		end
 	end
 
---##################### Speedrunning mode
-	function SpeedrunMode()
-		if items.equipped_at("Weapon") and (string.find(items.equipped_at("Weapon").name(), "meat ration") or string.find(items.equipped_at("Weapon").name(), "bread ration")) then
-			Cmd("force_more_message += .*into view")
+--##################### Wielded item - bool
+	function IsWielded()
+		return items.equipped_at("Weapon")
+	end
+
+--##################### Wielded item
+	function IsWielded(item)
+		if items.equipped_at("Weapon") then
+			return string.find(items.equipped_at("Weapon").name(), item)
 		else
-			Cmd("force_more_message -= .*into view")
+			return false
+		end
+	end
+
+--##################### Speedrunning mode
+	local SpeedMode = false
+	function SpeedrunMode()
+		if IsWielded("meat ration") or IsWielded("bread ration") then
+			if not SpeedMode then
+				SpeedMode = true
+				Cmd("force_more_message += .*into view")
+			else
+				return
+			end
+		else
+			if SpeedMode then
+				SpeedMode = false
+				Cmd("force_more_message -= .*into view")
+			else
+				return
+			end
 		end
 	end
 
@@ -158,7 +182,8 @@ menu += $good:amulet of (faith|rage|resist corrosion)
 menu += $verygood:amulet of (clarity|regeneration|resist mutation|the gourmand)
 
 menu += $good:\+.*(buckler|shield|mail|armour|robe|hat|helmet)
-menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|weapon).*
+menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|shield|buckler|robe|hat|helmet).*
+menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(sword|dagger|rapier|axe|spear|bardiche|glaive|trident|bow|crossbow|sling).*
 
 menu += $useless:inert
 menu += $survival:disc of storms
@@ -184,8 +209,8 @@ menu += $dangerous:mutagenic
 
 menu += $dangerous:potions? of (berserk|mutation)
 menu += $good:potions? of (flight|restore)
-menu += $helpful:potions? of (agility|brilliance|invisibility|resistance)
-menu += $verygood:potions? of curing
+menu += $helpful:potions? of (agility|brilliance|resistance)
+menu += $verygood:potions? of (curing|invisibility)
 menu += $survival:potions? of (haste|heal wounds|cancellation|might)
 menu += $important:potions? of (beneficial|cure mutation|experience|gain)
 menu += $magic:potions? of magic
@@ -237,7 +262,7 @@ glyph += $good:amulet of (faith|rage|resist corrosion)
 glyph += $verygood:amulet of (clarity|regeneration|resist mutation|the gourmand)
 
 glyph += $good:\+.*(buckler|shield|mail|armour|robe|hat|helmet)
-glyph += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|weapon).*
+glyph += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|weapon|shield).*
 
 glyph += $survival:disc of storms
 glyph += $dangerous:tome of Destruction
@@ -427,6 +452,7 @@ sp += Controlled Blink:a
 it := item_slot
 
 it += trishula:w
+it += bread ration:r
 
 it += throwing net:F
 
@@ -468,46 +494,56 @@ ap := autopickup
 #ap =
 
 ap -= \|
-#ap = $?!"/%}
-
+ap += $
 
 ##################### Auto-not-grab - exceptions of your kleptomania
 ae := autopickup_exceptions
-ae =
+ae = 
+
+ae ^= <(unidentified).*(scrolls?|wand|jewellery|book).*
+: if you.race() == "Mummy" then
+	ae ^= >(unidentified).*potions?
+: else
+	ae ^= <(unidentified).*potions?
+: end
+
+ae ^= <scrolls? of.*(immolation)
+ae ^= <scrolls? of.*(identify|silence|magic mapping|recharging)
+ae ^= <scrolls? of.*(acquirement|brand weapon|curse*|enchant.*)
+ae ^= <scrolls? of.*(blinking|teleport|fear|fog|summoning)
+: if you.race() == "Mummy" or you.race() == "Ghoul" or you.race() == "Vampire" then
+	ae ^= <scrolls? of torment
+	ae ^= >scrolls? of holy word
+: else
+	ae ^= >scrolls? of torment
+	ae ^= <scrolls? of holy word
+: end
+# Amnesia is doubtful
+
+ae ^= <potions? of.*(agility|brilliance|might|berserk rage)
+ae ^= <potions? of.*(ambrosia|curing|heal wounds|magic|resistance|cure mutation)
+ae ^= <potions? of.*(experience|invisibility|cancellation|beneficial mutation)
+: if you.race() == "Vampire" then
+	ae ^= <potions? of blood
+: end
 
 ae ^= >useless_item, >bad_item, >evil_item, >deck of.*
 ae ^= >wand of.*(frost|flame|magic darts|enslavement|paralyze|confusion|polymorph|random effects|slowing)
 ae ^= >wand of.*(digging|disintegration)
-ae ^= >potions? of.*(flight), >beef jerk.*, >.*pizza.*, >.*rod
 ae ^= >ring of (ice|fire|protection from .*|positive energy)
 ae ^= >ring of (wizardry|magicial power|stealth|flight|sustain abilities)
 ae ^= >ring of (strength|intelligence|dexterity|see invisible)
 
 ae ^= <(phial|lamp|disc|fan) of.*
-ae ^= <scrolls? of.*(immolation)
 
-##################### XL depend autopickup exceptions
-: if you.xl() >= 24 then
-	ae ^= >potions? of.*(lignification)
+: if you.race() ~= "Mummy" then
+	ae ^= <(meat rations?|bread rations?|chunks?.*|fruits?|royal jelly)
 : else
-	ae ^= <potions? of.*(lignification)
+	ae ^= >(meat rations?|bread rations?|chunks?.*|fruits?|royal jelly)
 : end
-
-: if you.xl() >= 10 then
-	ae ^= >(throwing nets?|needles?).*
-: else
-	ae ^= <(throwing nets?|needles?).*
-: end
-
-: if you.xl() >=13 then
-	ae ^= >wand of.*(fire|cold|draining|lighting|fireball)
-: else
-	ae ^= <wand of.*(fire|cold|draining|lighting|fireball)
-: end
-
 {
 --##################### Autopickup management function
-	function exception(item, t)
+	function Autopickup(item, t)
 		if t then
 			Cmd("autopickup_exceptions ^= <"..item)
 		else
@@ -515,14 +551,49 @@ ae ^= <scrolls? of.*(immolation)
 		end
 	end
 
+--##################### XL depend autopickup
+	function AutopickupByXL()
+		if you.xl() < 24 then
+			Autopickup("potions? of.*lignification", true)
+		else
+			Autopickup("potions? of.*lignification", false)
+		end
+
+		if you.xl() < 13 then
+			Autopickup("(throwing nets?|needles?).*", true)
+		else
+			Autopickup("(throwing nets?|needles?).*", false)
+		end
+
+		if you.xl() < 16 then
+			Autopickup("wand of.*(fire|cold|draining|lighting|fireball)", true)
+		else
+			Autopickup("wand of.*(fire|cold|draining|lighting|fireball)", false)
+		end
+	end
+
+--##################### Race depend autopickup
+	if not you.race() == "Troll" then
+		Autopickup("beef jerk.*", false)
+		Autopickup(".*pizza.*", false)
+	end
+
+	if you.race() == "Troll" or you.race() == "Ogre" then
+		Autopickup("large rocks?", true)
+	end
+
 --##################### Autopickup for certain items
-	local function pickup_artefacts(item, name)
+	Autopickup("potions? of.*flight", false)
+	Autopickup(".*rod", false)
+
+--##################### Autopickup rules function
+	local function AutopickupSpecific(item, name)
 		if not item.is_useless and item.artefact then
 			return true
 		end
 	end
 
-	add_autopickup_func(pickup_artefacts)
+	add_autopickup_func(AutopickupSpecific)
 }
 
 # Tags: autopickup, expceptions, items, grab, unidentified
@@ -864,7 +935,7 @@ stop += Your transformation is almost over
 			else
 				ChangeTile("mennas")
 			end
-		elseif you.god():find("Trog") and you.race() == "Troll" then
+		elseif you.race() == "Troll" then
 			if you.xl() < 10 then
 				ChangeTile("purgy")
 			elseif you.xl() < 15 then
@@ -917,21 +988,25 @@ stop += Your transformation is almost over
 #####################
 {
 	local playerXL = 0
+	local playerTurns = you.turns()
 	function ready()
 		AnnounceDamage()
-		OpenSkills()
 		SpeedrunMode()
 
 		forceByRes()
 		
+		if playerTurns == 0 then
+			OpenSkills()
+		end
+		
 		if you.xl() ~= playerXL then
 			playerXL = you.xl()
+			AutopickupByXL()
 			forceByXL()
 			AutoChangeTile()
 		end
 	end
 }
-# Tags: main, loop, ready,
 #####################
 ##################### End of main loop
 #####################
