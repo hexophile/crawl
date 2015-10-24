@@ -7,7 +7,7 @@ You can use this RCfile freely, but if you don't mind, please include link to th
 RC is edited by me, lots of things in RCfile is copied from other players, such as autoinscription or OpenSkills().
 
 Therefore I put here list of players from whom I copied something: bart, Pikaro, Lasty, Vidiiot
-And LogicNinja from s-z (dobrazupa.org) server.
+and LogicNinja from s-z (dobrazupa.org) server.
 
 Thank you guys, and sorry I've stolen so much from you all :P
 
