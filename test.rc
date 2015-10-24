@@ -24,12 +24,37 @@ bindkey = [s] CMD_LUA_CONSOLE
 		end
 	end
 
---##################### Speedrunning mode
-	function SpeedrunMode()
-		if items.equipped_at("Weapon") and (string.find(items.equipped_at("Weapon").name(), "meat ration") or string.find(items.equipped_at("Weapon").name(), "bread ration")) then
-			Cmd("force_more_message += .*into view")
+--##################### Wielded item - bool
+	function IsWielded()
+		return items.equipped_at("Weapon")
+	end
+
+--##################### Wielded item
+	function IsWielded(item)
+		if items.equipped_at("Weapon") then
+			return string.find(items.equipped_at("Weapon").name(), item)
 		else
-			Cmd("force_more_message -= .*into view")
+			return false
+		end
+	end
+
+--##################### Speedrunning mode
+	local SpeedMode = false
+	function SpeedrunMode()
+		if IsWielded("meat ration") or IsWielded("bread ration") then
+			if not SpeedMode then
+				SpeedMode = true
+				Cmd("force_more_message += .*into view")
+			else
+				return
+			end
+		else
+			if SpeedMode then
+				SpeedMode = false
+				Cmd("force_more_message -= .*into view")
+			else
+				return
+			end
 		end
 	end
 
@@ -399,6 +424,7 @@ sp += Controlled Blink:a
 it := item_slot
 
 it += trishula:w
+it += bread ration:r
 
 it += throwing net:F
 
@@ -442,7 +468,6 @@ ap := autopickup
 ap -= \|
 ap += $
 
-
 ##################### Auto-not-grab - exceptions of your kleptomania
 ae := autopickup_exceptions
 ae = 
@@ -468,7 +493,7 @@ ae ^= <scrolls? of.*(blinking|teleport|fear|fog|summoning)
 # Amnesia is doubtful
 
 ae ^= <potions? of.*(agility|brilliance|might|berserk rage)
-ae ^= <potions? of.*(ambrosia|curing|heal wounds|magic|resistance)
+ae ^= <potions? of.*(ambrosia|curing|heal wounds|magic|resistance|cure mutation)
 ae ^= <potions? of.*(experience|invisibility|cancellation|beneficial mutation)
 : if you.race() == "Vampire" then
 	ae ^= <potions? of blood
@@ -484,11 +509,10 @@ ae ^= >ring of (strength|intelligence|dexterity|see invisible)
 ae ^= <(phial|lamp|disc|fan) of.*
 
 : if you.race() ~= "Mummy" then
-	ae ^= <(meat rations?|bread rations?|chunks?.*|fruits?)
+	ae ^= <(meat rations?|bread rations?|chunks?.*|fruits?|royal jelly)
 : else
-	ae ^= >(meat rations?|bread rations?|chunks?.*|fruits?)
+	ae ^= >(meat rations?|bread rations?|chunks?.*|fruits?|royal jelly)
 : end
-
 {
 --##################### Autopickup management function
 	function Autopickup(item, t)
@@ -936,12 +960,16 @@ stop += Your transformation is almost over
 #####################
 {
 	local playerXL = 0
+	local playerTurns = you.turns()
 	function ready()
 		AnnounceDamage()
-		OpenSkills()
 		SpeedrunMode()
 
 		forceByRes()
+		
+		if playerTurns == 0 then
+			OpenSkills()
+		end
 		
 		if you.xl() ~= playerXL then
 			playerXL = you.xl()
