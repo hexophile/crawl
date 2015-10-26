@@ -62,10 +62,6 @@ bindkey = [s] CMD_LUA_CONSOLE
 	if you.race() ~= "Naga" then
 		tile_show_player_species = true
 	end
-
---##################### All rest
-
--- There's problem with main loop and tile changing - need fix
 }
 
 default_manual_training = true
@@ -73,6 +69,93 @@ default_manual_training = true
 # mechanics, travel, rest, chunk, lua, butcher, misc, damage, eating, tile,
 #####################
 ##################### End of clua main body section
+#####################
+
+
+#####################
+##################### Player status information
+#####################
+{
+
+	local playerMainSkill = ""
+
+	local player = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
+	local res = { rF = 0, rC = 0, rN = 0, rPois = 0, rElec = 0, rCorr = 0, rMut = 0, MR = 0 }
+	local pow = { sInv = 0, sustAt = 0, clar = 0, gourm = 0, spirit = 0, ward = 0, stasis = 0, stealth = 0 }
+	local attr = { str = 0, int = 0, dex = 0 }
+	local stat = { fly = 0, rage = 0, conf = 0, para = 0, caught = 0, fast = 0, slow = 0, exh = 0, tele = 0, root = 0, pois = 0, corr = 0, inv = 0, mesm = 0, onFire = 0, petr = 0, sil = 0, regen = 0, might = 0, agile = 0, brill = 0, sick = 0, contam = 0 }
+
+	function PlayerUpdate()
+		player["XL"] = you.xl()
+		player["god"] = you.god()
+		player["baseHP"] = you.hp()
+		player["baseMP"] = you.base_mp()
+		player["hunger"] = you.hunger()
+		player["gold"] = you.gold()
+		player["turns"] = you.turns()
+	end
+
+	function HealthUpdate()
+		--TODO
+	end
+
+	function ResistUpdate()
+		res["rF"] = you.res_fire()
+		res["rC"] = you.res_cold()
+		res["rN"] = you.res_draining()
+		res["rPois"] = you.res_poison()
+		res["rCorr"] = you.res_corr()
+		res["rMut"] = you.res_mutation()
+	end
+
+	function PowerUpdate()
+		pow["sInv"] = you.see_invisible()
+		pow["sustAt"] = you.res_statdrain()
+		pow["gourm"] = you.gourmand()
+		pow["spirit"] = you.spirit_shield()
+
+	--help!	pow["clar"] = you.???()
+	--halp!	pow["ward"] = you.???()
+	-- ;-;	pow["stasis"] = you.???()
+	--helpz	pow["stealth"] = you.???()
+	end
+
+	function AttributesUpdate()
+		attr["str"] = you.strength()
+		attr["int"] = you.intelligence()
+		attr["dex"] = you.dexterity()
+	end
+
+	function StatusUpdate()
+		stat["fly"] = you.flying()
+		stat["rage"] = you.berserk()
+		stat["conf"] = you.confused()
+		stat["para"] = you.paralysed()
+		stat["caught"] = you.caught()
+		stat["fast"] = you.hasted()
+		stat["slow"] = you.slowed()
+		stat["exh"] = you.exhausted()
+		stat["tele"] = you.teleporting()
+		stat["root"] = you.rooted()
+		stat["pois"] = you.poisoned()
+		stat["corr"] = you.corrosion()
+		stat["inv"] = you.invisible()
+		stat["mesm"] = you.mesmerised()
+		stat["onFire"] = you.on_fire()
+		stat["petr"] = you.petrifying()
+		stat["sil"] = you.silencing()
+		stat["regen"] = you.regenerating()
+		stat["might"] = you.mighty()
+		stat["agile"] = you.agile()
+		stat["brill"] = you.brilliant()
+		stat["sick"] = you.sick()
+		stat["contam"] = you.contaminated()
+	end
+}
+
+Tags: status, resists, player, character,
+#####################
+##################### End of player status information
 #####################
 
 
@@ -155,7 +238,8 @@ menu += $good:amulet of (faith|rage|resist corrosion)
 menu += $verygood:amulet of (clarity|regeneration|resist mutation|the gourmand)
 
 menu += $good:\+.*(buckler|shield|mail|armour|robe|hat|helmet)
-menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|weapon|shield).*
+menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|shield|buckler|robe|hat|helmet).*
+menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(sword|dagger|rapier|axe|spear|bardiche|glaive|trident|bow|crossbow|sling|flail|eveningstar).*
 
 menu += $useless:inert
 menu += $survival:disc of storms
@@ -393,6 +477,11 @@ ai += amulet of resist mutation:rMut
 ai += amulet of stasis:Stasis
 ai += amulet of the gourmand:Gourm
 ai += amulet of warding:Ward rN+
+
+ai += potions? of might:Str+5 DMG+1d10
+ai += potions? of agility:Stlth+ Dex+5 EV+5
+ai += potions? of brilliance:Archmagi Int+5 Wiz++
+ai += potions? of resistance:rF+ rC+ rPois rElec rCorr
 
 ai += throwing net:+f
 
@@ -949,6 +1038,7 @@ stop += Your transformation is almost over
 	end
 --##################### End of AutoChangeTile function
 }
+
 # Tags: tile, autochange, player
 #####################
 ##################### End of auto change tile
@@ -959,18 +1049,22 @@ stop += Your transformation is almost over
 ##################### Main loop
 #####################
 {
-	local playerXL = 0
-	local playerTurns = you.turns()
 	function ready()
 		AnnounceDamage()
 		SpeedrunMode()
+
+		PlayerUpdate()
+		ResistUpdate()
+		PowerUpdate()
+		AttributesUpdate()
+		StatusUpdate()
 
 		forceByRes()
 		
 		if playerTurns == 0 then
 			OpenSkills()
 		end
-		
+
 		if you.xl() ~= playerXL then
 			playerXL = you.xl()
 			AutopickupByXL()
