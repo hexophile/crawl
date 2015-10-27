@@ -69,8 +69,8 @@ bindkey = [s] CMD_LUA_CONSOLE
 	local playerMainSkill = ""
 
 	player = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
-	res = { rF = 0, rC = 0, rN = 0, rPois = 0, rElec = 0, rCorr = 0, rMut = 0, MR = 0 }
-	pow = { sInv = 0, sustAt = 0, clar = 0, gourm = 0, spirit = 0, ward = 0, stasis = 0, stealth = 0 }
+	resist = { rF = 0, rC = 0, rN = 0, rPois = 0, rElec = 0, rCorr = 0, rMut = 0, MR = 0 }
+	power = { sInv = 0, sustAt = 0, clar = 0, gourm = 0, spirit = 0, ward = 0, stasis = 0, stealth = 0 }
 	attr = { str = 0, int = 0, dex = 0 }
 	stat = { fly = 0, rage = 0, conf = 0, para = 0, caught = 0, fast = 0, slow = 0, exh = 0, tele = 0, root = 0, pois = 0, corr = 0, inv = 0, mesm = 0, onFire = 0, petr = 0, sil = 0, regen = 0, might = 0, agile = 0, brill = 0, sick = 0, contam = 0 }
 
@@ -89,24 +89,24 @@ bindkey = [s] CMD_LUA_CONSOLE
 	end
 
 	function ResistUpdate()
-		res["rF"] = you.res_fire()
-		res["rC"] = you.res_cold()
-		res["rN"] = you.res_draining()
-		res["rPois"] = you.res_poison()
-		res["rCorr"] = you.res_corr()
-		res["rMut"] = you.res_mutation()
+		resist["rF"] = you.res_fire()
+		resist["rC"] = you.res_cold()
+		resist["rN"] = you.res_draining()
+		resist["rPois"] = you.res_poison()
+		resist["rCorr"] = you.res_corr()
+		resist["rMut"] = you.res_mutation()
 	end
 
 	function PowerUpdate()
-		pow["sInv"] = you.see_invisible()
-		pow["sustAt"] = you.res_statdrain()
-		pow["gourm"] = you.gourmand()
-		pow["spirit"] = you.spirit_shield()
+		power["sInv"] = you.see_invisible()
+		power["sustAt"] = you.res_statdrain()
+		power["gourm"] = you.gourmand()
+		power["spirit"] = you.spirit_shield()
 
-	--help!	pow["clar"] = you.???()
-	--halp!	pow["ward"] = you.???()
-	-- ;-;	pow["stasis"] = you.???()
-	--helpz	pow["stealth"] = you.???()
+	--help!	power["clar"] = you.???()
+	--halp!	power["ward"] = you.???()
+	-- ;-;	power["stasis"] = you.???()
+	--helpz	power["stealth"] = you.???()
 	end
 
 	function AttributesUpdate()
@@ -145,55 +145,6 @@ bindkey = [s] CMD_LUA_CONSOLE
 Tags: status, resists, player, character,
 #####################
 ##################### End of player status information
-#####################
-
-
-#####################
-##################### Non-LUA mechanics
-##################### 
-
-confirm_butcher = never
-easy_eat_chunks = true
-auto_eat_chunks = true
-auto_sacrifice = true
-rest_wait_both = true
-
-travel_delay = -1
-explore_delay = -1
-rest_delay = -1
-
-explore_stop = items,stairs,shops,altars,portals,branches,runed_doors
-travel_avoid_terrain = deep water
-
-easy_unequip = true
-equip_unequip = true
-
-fire_order += inscribed
-pickup_thrown = false
-enable_recast_spell = true
-
-show_gold_turns = true
-show_game_turns = true
-
-explore_wall_bias = 0
-explore_improved = true
-
-hp_warning = 40
-mp_warning = 30
-autofight_stop = 35
-
-default_manual_training = true
-
-{
---##################### Open skills window
-	if player["turns"] == 0 then
-		crawl.sendkeys("m")
-	end
-}
-
-# Tags: hp, tab, autofight, warning,
-#####################
-##################### End of non-LUA mechanics
 #####################
 
 
@@ -816,7 +767,7 @@ stop += Your transformation is almost over
 	force(".*ghost of.*into view", true)
 
 --##################### force_more by XL
-	function forceByXL()
+	function ForceByXL()
 		if you.xl() < 25 then
 			force("juggernaut.*into view", true)
 			force(".*distortion.*into view", true)
@@ -876,7 +827,7 @@ stop += Your transformation is almost over
 --##################### End of force_more by XL
 
 --##################### force_more by resists
-	function forceByRes()
+	function ForceByRes()
 		if you.res_fire() <= 0 then
 			force(".*flaming.*into view", true)
 			force(".*fire.*into view", true)
@@ -1039,6 +990,7 @@ stop += Your transformation is almost over
 ##################### Main loop
 #####################
 {
+	local earlierPlayer = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
 	function ready()
 		AnnounceDamage()
 		SpeedrunMode()
@@ -1049,18 +1001,68 @@ stop += Your transformation is almost over
 		AttributesUpdate()
 		StatusUpdate()
 
-		forceByRes()
+		ForceByRes()
 
-		if you.xl() ~= playerXL then
-			playerXL = you.xl()
+		if player["XL"] ~= earlierPlayer["XL"] then
+			earlierPlayer["XL"] = player["XL"]
 			AutopickupByXL()
-			forceByXL()
+			ForceByXL()
 			AutoChangeTile()
 		end
 	end
 }
 #####################
 ##################### End of main loop
+#####################
+
+
+#####################
+##################### Non-LUA mechanics
+##################### 
+
+confirm_butcher = never
+easy_eat_chunks = true
+auto_eat_chunks = true
+auto_sacrifice = true
+rest_wait_both = true
+
+travel_delay = -1
+explore_delay = -1
+rest_delay = -1
+
+explore_stop = items,stairs,shops,altars,portals,branches,runed_doors
+travel_avoid_terrain = deep water
+
+easy_unequip = true
+equip_unequip = true
+
+fire_order += inscribed
+pickup_thrown = false
+enable_recast_spell = true
+
+show_gold_turns = true
+show_game_turns = true
+
+explore_wall_bias = 0
+explore_improved = true
+
+hp_warning = 40
+mp_warning = 30
+autofight_stop = 35
+
+default_manual_training = true
+
+{
+--##################### Open skills window
+	player["turns"] = you.turns()
+	if player["turns"] == 0 then
+		crawl.sendkeys("m")
+	end
+}
+
+# Tags: hp, tab, autofight, warning,
+#####################
+##################### End of non-LUA mechanics
 #####################
 
 
