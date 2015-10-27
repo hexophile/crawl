@@ -15,11 +15,6 @@ bindkey = [s] CMD_LUA_CONSOLE
 		crawl.mpr(log_msg)
 	end
 
---##################### Open skills window
-	function OpenSkills()
-		crawl.sendkeys("m")
-	end
-
 --##################### Wielded item - bool
 	function IsWielded()
 		return items.equipped_at("Weapon")
@@ -60,8 +55,6 @@ bindkey = [s] CMD_LUA_CONSOLE
 	end
 }
 
-default_manual_training = true
-
 # mechanics, travel, rest, chunk, lua, butcher, misc, damage, eating, tile,
 #####################
 ##################### End of clua main body section
@@ -75,11 +68,11 @@ default_manual_training = true
 
 	local playerMainSkill = ""
 
-	local player = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
-	local res = { rF = 0, rC = 0, rN = 0, rPois = 0, rElec = 0, rCorr = 0, rMut = 0, MR = 0 }
-	local pow = { sInv = 0, sustAt = 0, clar = 0, gourm = 0, spirit = 0, ward = 0, stasis = 0, stealth = 0 }
-	local attr = { str = 0, int = 0, dex = 0 }
-	local stat = { fly = 0, rage = 0, conf = 0, para = 0, caught = 0, fast = 0, slow = 0, exh = 0, tele = 0, root = 0, pois = 0, corr = 0, inv = 0, mesm = 0, onFire = 0, petr = 0, sil = 0, regen = 0, might = 0, agile = 0, brill = 0, sick = 0, contam = 0 }
+	player = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
+	res = { rF = 0, rC = 0, rN = 0, rPois = 0, rElec = 0, rCorr = 0, rMut = 0, MR = 0 }
+	pow = { sInv = 0, sustAt = 0, clar = 0, gourm = 0, spirit = 0, ward = 0, stasis = 0, stealth = 0 }
+	attr = { str = 0, int = 0, dex = 0 }
+	stat = { fly = 0, rage = 0, conf = 0, para = 0, caught = 0, fast = 0, slow = 0, exh = 0, tele = 0, root = 0, pois = 0, corr = 0, inv = 0, mesm = 0, onFire = 0, petr = 0, sil = 0, regen = 0, might = 0, agile = 0, brill = 0, sick = 0, contam = 0 }
 
 	function PlayerUpdate()
 		player["XL"] = you.xl()
@@ -156,7 +149,7 @@ Tags: status, resists, player, character,
 
 
 #####################
-##################### Mechanics
+##################### Non-LUA mechanics
 ##################### 
 
 confirm_butcher = never
@@ -182,8 +175,6 @@ enable_recast_spell = true
 show_gold_turns = true
 show_game_turns = true
 
-# In theory it should help in autoexploring
-# EDIT: And it does. A lot!
 explore_wall_bias = 0
 explore_improved = true
 
@@ -191,9 +182,18 @@ hp_warning = 40
 mp_warning = 30
 autofight_stop = 35
 
+default_manual_training = true
+
+{
+--##################### Open skills window
+	if player["turns"] == 0 then
+		crawl.sendkeys("m")
+	end
+}
+
 # Tags: hp, tab, autofight, warning,
 #####################
-##################### End of mechanics
+##################### End of non-LUA mechanics
 #####################
 
 
@@ -1050,10 +1050,6 @@ stop += Your transformation is almost over
 		StatusUpdate()
 
 		forceByRes()
-		
-		if playerTurns == 0 then
-			OpenSkills()
-		end
 
 		if you.xl() ~= playerXL then
 			playerXL = you.xl()
