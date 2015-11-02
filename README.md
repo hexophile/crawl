@@ -16,10 +16,10 @@ Thank you guys, and sorry I've stolen so much from you all :P
 You can find there almost everything from my RC:
  - https://github.com/crawl/crawl/blob/master/crawl-ref/docs/options_guide.txt
 
-Functions ready() and AnnounceDamage() can be found here:
+Function AnnounceDamage() can be found here:
  - https://github.com/HilariousDeathArtist/DCSSConfigFile
 
-Especially function ready() which is absolutely awesome.
+The main loop is contained in ready() function called every turn by crawl.
 
 
 ### Other
