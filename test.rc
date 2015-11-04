@@ -129,6 +129,18 @@ bindkey = [s] CMD_LUA_CONSOLE
 	end
 
 	function AnnounceDiff()
+		local modifiedHP = 0
+		if earlierPlayer["baseHP"] > player["baseHP"] then
+			earlierPlayer["baseHP"] = player["baseHP"]
+			modifiedHP = 0
+		elseif earlierPlayer["baseHP"] < player["baseHP"] then
+			modifiedHP = player["baseHP"] - earlierPlayer["baseHP"]
+			Msg("You got additional "..modifiedHP.." HP.")
+		end
+		-- There is thing with this, when you start the game you will get message about additional HP
+		-- equal your base HP. This can be solved by placing earlierPlayer["baseHP"] = player["baseHP"]
+		-- before ready() loop. I like it, so if you find this annoying, fix it by yourself. :) (same for HP)
+		
 		local HP = 0
 		if earlierPlayer["HP"] < player["HP"]-1 then
 			HP = player["HP"] - earlierPlayer["HP"]
@@ -147,17 +159,7 @@ bindkey = [s] CMD_LUA_CONSOLE
 	end
 
 	function HealthStatement()
-		local modifiedHP = 0
-
 		HealthUpdate()
-
-		if earlierPlayer["baseHP"] > player["baseHP"] then
-			earlierPlayer["baseHP"] = player["baseHP"]
-			modifiedHP = 0
-		elseif earlierPlayer["baseHP"] < player["baseHP"] then
-			modifiedHP = player["baseHP"] - earlierPlayer["baseHP"]
-			Msg("You got additional "..modifiedHP.." HP.")
-		end
 
 		AnnounceDiff()
 
