@@ -91,7 +91,7 @@ bindkey = [s] CMD_LUA_CONSOLE
 		player["HP"], player["baseHP"] = you.hp()
 	end
 
-	function AnnouceHP( hp, maxhp )
+	function AnnounceHP( hp, maxhp )
 		if hp > 0.90 * maxhp then
 			Msg("You have now: <lightgreen>"..hp.."/"..maxhp.."</lightgreen> HP.")
 		elseif hp > 0.60 * maxhp then
@@ -120,10 +120,10 @@ bindkey = [s] CMD_LUA_CONSOLE
 
 		if earlierPlayer["HP"] < player["HP"]-1 then
 			Msg("<green>Restored "..player["HP"]-earlierPlayer["HP"].." HP.</green>")
-			AnnouceHP( player["HP"], player["baseHP"] )
+			AnnounceHP( player["HP"], player["baseHP"] )
 		elseif earlierPlayer["HP"] > player["HP"] then
 			Msg("<red>You lost "..earlierPlayer["HP"]-player["HP"].." HP.</red>")
-			AnnouceHP( player["HP"], player["baseHP"] )
+			AnnounceHP( player["HP"], player["baseHP"] )
 		end
 
 		earlierPlayer["HP"] = player["HP"]
