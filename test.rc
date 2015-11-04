@@ -128,6 +128,24 @@ bindkey = [s] CMD_LUA_CONSOLE
 
 	end
 
+	function AnnounceDiff()
+		local HP = 0
+		if earlierPlayer["HP"] < player["HP"]-1 then
+			HP = player["HP"] - earlierPlayer["HP"]
+			Msg("<green>Restored "..HP.." HP.</green>")
+			AnnounceHP( player["HP"], player["baseHP"] )
+
+		elseif earlierPlayer["HP"] > player["HP"] then
+			HP = earlierPlayer["HP"]-player["HP"]
+			if HP > 0.20 * player["baseHP"] and HP > 5 then
+				Msg("<lightred>!MASSIVE DAMAGE! YOU LOST "..HP.." HP!</lightred>")
+			else
+				Msg("<red>You lost "..HP.." HP.</red>")
+			end
+			AnnounceHP( player["HP"], player["baseHP"] )
+		end
+	end
+
 	function HealthStatement()
 		local modifiedHP = 0
 
@@ -141,13 +159,7 @@ bindkey = [s] CMD_LUA_CONSOLE
 			Msg("You got additional "..modifiedHP.." HP.")
 		end
 
-		if earlierPlayer["HP"] < player["HP"]-1 then
-			Msg("<green>Restored "..player["HP"]-earlierPlayer["HP"].." HP.</green>")
-			AnnounceHP( player["HP"], player["baseHP"] )
-		elseif earlierPlayer["HP"] > player["HP"] then
-			Msg("<red>You lost "..earlierPlayer["HP"]-player["HP"].." HP.</red>")
-			AnnounceHP( player["HP"], player["baseHP"] )
-		end
+		AnnounceDiff()
 
 		earlierPlayer["HP"] = player["HP"]
 		earlierPlayer["baseHP"] = player["baseHP"]
@@ -748,6 +760,7 @@ stop += Your transformation is almost over
 	force("Trog sends monsters to punish you", true)
 	force(".*skill increases.*", true)
 	force(".*LOW HITPOINT.*", true)
+	force(".*MASSIVE.*", true)
 	force("Your transformation is almost over.", true)
 	force("seraph.*into view", true)
 	force("You fail to use your ability", true)
