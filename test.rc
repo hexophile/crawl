@@ -1,3 +1,16 @@
+# TEAMCAPITAN
+# RC edited by Alipheese from xtahua
+# https://github.com/hexophile/crawl
+
+# Thanks to pipel for all help with this RC
+# Many thanks to bart for RC
+# Thanks to Pikaro and Lasty for their RC files
+# Thanks to Vidiiot for speedrunning part
+
+# https://github.com/crawl/crawl/blob/master/crawl-ref/docs/options_guide.txt
+# You can find there 95% of this pretty primitive RC
+
+
 #####################
 ##################### clua main body section
 #####################
@@ -5,6 +18,15 @@
 include = advanced_optioneering.txt
 
 bindkey = [s] CMD_LUA_CONSOLE
+
+#
+# Please be aware where do you place functions calls - always after declaration.
+# Function ready() can stop working if you mess up one function, most of errors
+# will show up in crawl message log, but there can be 'errors' that won't be
+# error for interpreter at all, like calling function BEFORE declaration.
+#
+# Please note in function("regex") size of letters matters.
+#
 
 {
 --##################### Send command to crawl
@@ -111,11 +133,12 @@ bindkey = [s] CMD_LUA_CONSOLE
 
 		HealthUpdate()
 
-		if earlierPlayer["baseHP"] < player["baseHP"] then
+		if earlierPlayer["baseHP"] > player["baseHP"] then
 			earlierPlayer["baseHP"] = player["baseHP"]
 			modifiedHP = 0
-		elseif earlierPlayer["baseHP"] > player["baseHP"] then
-			modifiedHP = earlierPlayer["baseHP"]
+		elseif earlierPlayer["baseHP"] < player["baseHP"] then
+			modifiedHP = player["baseHP"] - earlierPlayer["baseHP"]
+			Msg("You got additional "..modifiedHP.." HP.")
 		end
 
 		if earlierPlayer["HP"] < player["HP"]-1 then
@@ -127,6 +150,7 @@ bindkey = [s] CMD_LUA_CONSOLE
 		end
 
 		earlierPlayer["HP"] = player["HP"]
+		earlierPlayer["baseHP"] = player["baseHP"]
 	end
 
 	function ResistUpdate()
