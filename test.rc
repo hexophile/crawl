@@ -1,4 +1,6 @@
-include += HDamage.rc
+#####################
+##################### clua main body section
+#####################
 
 include = advanced_optioneering.txt
 
@@ -66,13 +68,15 @@ bindkey = [s] CMD_LUA_CONSOLE
 #####################
 {
 
-	local playerMainSkill = ""
+	playerMainSkill = ""
 
 	player = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
 	resist = { rF = 0, rC = 0, rN = 0, rPois = 0, rElec = 0, rCorr = 0, rMut = 0, MR = 0 }
 	power = { sInv = 0, sustAt = 0, clar = 0, gourm = 0, spirit = 0, ward = 0, stasis = 0, stealth = 0 }
 	attr = { str = 0, int = 0, dex = 0 }
 	stat = { fly = 0, rage = 0, conf = 0, para = 0, caught = 0, fast = 0, slow = 0, exh = 0, tele = 0, root = 0, pois = 0, corr = 0, inv = 0, mesm = 0, onFire = 0, petr = 0, sil = 0, regen = 0, might = 0, agile = 0, brill = 0, sick = 0, contam = 0 }
+
+	earlierPlayer = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
 
 	function PlayerUpdate()
 		player["XL"] = you.xl()
@@ -83,9 +87,46 @@ bindkey = [s] CMD_LUA_CONSOLE
 		player["gold"] = you.gold()
 		player["turns"] = you.turns()
 	end
-
 	function HealthUpdate()
-		--TODO
+		player["HP"], player["baseHP"] = you.hp()
+	end
+
+	function AnnouceHP( hp, maxhp )
+		if hp > 0.90 * maxhp then
+			Msg("You have now: <lightgreen>"..hp.."/"..maxhp.."</lightgreen> HP.")
+		elseif hp > 0.60 * maxhp then
+			Msg("You have now: <green>"..hp.."/"..maxhp.."</green> HP.")
+		elseif hp > 0.30 * maxhp then
+			Msg("You have now: <yellow>"..hp.."/"..maxhp.."</yellow> HP.")
+		elseif hp > 0.15 * maxhp then
+			Msg("You have now: <lightred>"..hp.."/"..maxhp.."</lightred> HP.")
+		else
+			Msg("You have now: <red>"..hp.."/"..maxhp.."</red> HP.")
+		end
+
+	end
+
+	function HealthStatement()
+		local modifiedHP = 0
+
+		HealthUpdate()
+
+		if earlierPlayer["baseHP"] < player["baseHP"] then
+			earlierPlayer["baseHP"] = player["baseHP"]
+			modifiedHP = 0
+		elseif earlierPlayer["baseHP"] > player["baseHP"] then
+			modifiedHP = earlierPlayer["baseHP"]
+		end
+
+		if earlierPlayer["HP"] < player["HP"]-1 then
+			Msg("<green>Restored "..player["HP"]-earlierPlayer["HP"].." HP.</green>")
+			AnnouceHP( player["HP"], player["baseHP"] )
+		elseif earlierPlayer["HP"] > player["HP"] then
+			Msg("<red>You lost "..earlierPlayer["HP"]-player["HP"].." HP.</red>")
+			AnnouceHP( player["HP"], player["baseHP"] )
+		end
+
+		earlierPlayer["HP"] = player["HP"]
 	end
 
 	function ResistUpdate()
@@ -186,7 +227,7 @@ menu += $verygood:amulet of (clarity|regeneration|resist mutation|the gourmand)
 
 menu += $good:\+.*(buckler|shield|mail|armour|robe|hat|helmet)
 menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(armour|shield|buckler|robe|hat|helmet).*
-menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(sword|dagger|rapier|axe|spear|bardiche|glaive|trident|bow|crossbow|sling|flail|eveningstar).*
+menu += $magic:.*(runed|dyed|shiny|glowing|enchanted).*(sword|dagger|rapier|axe|spear|bardiche|glaive|trident|bow|crossbow|sling).*
 
 menu += $useless:inert
 menu += $survival:disc of storms
@@ -528,7 +569,7 @@ ae ^= <scrolls? of.*(blinking|teleport|fear|fog|summoning)
 : end
 # Amnesia is doubtful
 
-ae ^= <potions? of.*(agility|brilliance|might|berserk rage)
+ae ^= <potions? of.*(agility|brilliance|might|berserk rage|haste)
 ae ^= <potions? of.*(ambrosia|curing|heal wounds|magic|resistance|cure mutation)
 ae ^= <potions? of.*(experience|invisibility|cancellation|beneficial mutation)
 : if you.race() == "Vampire" then
@@ -567,6 +608,12 @@ ae ^= <(phial|lamp|disc|fan) of.*
 			Autopickup("potions? of.*lignification", false)
 		end
 
+		if you.xl() < 13 then
+			Autopickup("(throwing nets?|needles?).*", true)
+		else
+			Autopickup("(throwing nets?|needles?).*", false)
+		end
+
 		if you.xl() < 16 then
 			Autopickup("wand of.*(fire|cold|draining|lighting|fireball)", true)
 		else
@@ -575,13 +622,15 @@ ae ^= <(phial|lamp|disc|fan) of.*
 	end
 
 --##################### Race depend autopickup
-	if not you.race() == "Troll" then
-		Autopickup("beef jerk.*", false)
-		Autopickup(".*pizza.*", false)
-	end
-
-	if you.race() == "Troll" or you.race() == "Ogre" then
-		Autopickup("large rocks?", true)
+	function AutopickupByRace()
+		if not you.race() == "Troll" then
+			Autopickup("beef jerk.*", false)
+			Autopickup(".*pizza.*", false)
+		end
+	
+		if you.race() == "Troll" or you.race() == "Ogre" then
+			Autopickup("large rocks?", true)
+		end
 	end
 
 --##################### Autopickup for certain items
@@ -990,10 +1039,10 @@ stop += Your transformation is almost over
 ##################### Main loop
 #####################
 {
-	local earlierPlayer = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
 	function ready()
-		AnnounceDamage()
 		SpeedrunMode()
+
+		HealthStatement()
 
 		PlayerUpdate()
 		ResistUpdate()
@@ -1031,7 +1080,9 @@ explore_delay = -1
 rest_delay = -1
 
 explore_stop = items,stairs,shops,altars,portals,branches,runed_doors
-travel_avoid_terrain = deep water
+: if you.race() ~= "Merfolk" then
+	travel_avoid_terrain = deep water
+: end
 
 easy_unequip = true
 equip_unequip = true
@@ -1060,7 +1111,7 @@ default_manual_training = true
 	end
 }
 
-# Tags: hp, tab, autofight, warning,
+# Tags: hp, tab, autofight, warning, skills window, start,
 #####################
 ##################### End of non-LUA mechanics
 #####################
