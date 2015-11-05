@@ -89,7 +89,6 @@ bindkey = [s] CMD_LUA_CONSOLE
 ##################### Player status information
 #####################
 {
-
 	playerMainSkill = ""
 
 	player = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
@@ -101,6 +100,7 @@ bindkey = [s] CMD_LUA_CONSOLE
 	earlierPlayer = { XL = 0, god = "", HP = 0, baseHP = 0, MP = 0, baseMP = 0, hunger = 0, gold = 0, turns = 0 }
 	earlierResist = { rF = 0, rC = 0, rN = 0, rPois = 0, rElec = 0, rCorr = 0, rMut = 0, MR = 0 }
 
+--##################### Update player main informations
 	function PlayerUpdate()
 		player["XL"] = you.xl()
 		player["god"] = you.god()
@@ -110,10 +110,13 @@ bindkey = [s] CMD_LUA_CONSOLE
 		player["gold"] = you.gold()
 		player["turns"] = you.turns()
 	end
+	
+--##################### Update the current turn HP and base HP status
 	function HealthUpdate()
 		player["HP"], player["baseHP"] = you.hp()
 	end
 
+--##################### Announce the amount of HP and paint it realtive to % of max HP
 	function AnnounceHP( hp, maxhp )
 		if hp > 0.90 * maxhp then
 			Msg("You have now: <lightgreen>"..hp.."/"..maxhp.."</lightgreen> HP.")
@@ -129,6 +132,7 @@ bindkey = [s] CMD_LUA_CONSOLE
 
 	end
 
+--##################### Announce difference between an earlier turn HP and base HP and the current turn
 	function AnnounceDiff()
 		local modifiedHP = 0
 		if earlierPlayer["baseHP"] > player["baseHP"] then
@@ -162,6 +166,7 @@ bindkey = [s] CMD_LUA_CONSOLE
 		end
 	end
 
+--##################### Main health management function
 	function HealthStatement()
 		HealthUpdate()
 		AnnounceDiff()
@@ -170,7 +175,7 @@ bindkey = [s] CMD_LUA_CONSOLE
 		earlierPlayer["baseHP"] = player["baseHP"]
 	end
 
-
+--##################### Update the current turn player's resists
 	function ResistUpdate()
 		resist["rF"] = you.res_fire()
 		resist["rC"] = you.res_cold()
@@ -180,10 +185,12 @@ bindkey = [s] CMD_LUA_CONSOLE
 		resist["rMut"] = you.res_mutation()
 	end
 
+--##################### Main resists management function
 	function ResistStatement()
 		local changed = false
-
+		
 		ResistUpdate()
+		
 		for elem in pairs(earlierResist) do
 			if earlierResist[elem] ~= resist[elem] then
 				earlierResist[elem] = resist[elem]
@@ -193,6 +200,7 @@ bindkey = [s] CMD_LUA_CONSOLE
 		return changed
 	end
 
+--##################### Update the current turn player's powers
 	function PowerUpdate()
 		power["sInv"] = you.see_invisible()
 		power["sustAt"] = you.res_statdrain()
@@ -205,12 +213,14 @@ bindkey = [s] CMD_LUA_CONSOLE
 	--helpz	power["stealth"] = you.???()
 	end
 
+--##################### Update the current turn player's attributes
 	function AttributesUpdate()
 		attr["str"] = you.strength()
 		attr["int"] = you.intelligence()
 		attr["dex"] = you.dexterity()
 	end
 
+--##################### Update player's status
 	function StatusUpdate()
 		stat["fly"] = you.flying()
 		stat["rage"] = you.berserk()
@@ -1100,7 +1110,6 @@ stop += Your transformation is almost over
 
 -- Call HealthStatement() function to announce damage we got last turn.
 		HealthStatement()
-
 
 -- Not assigned yet
 		PlayerUpdate()
