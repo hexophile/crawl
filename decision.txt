@@ -1,9 +1,0 @@
-{
-if crawl.yesno("Yes or Not?") then
-	crawl.mpr("Yes")
-else
-	crawl.mpr("Not")
-end
-
-crawl.mpr(crawl.c_input_line())
-}
